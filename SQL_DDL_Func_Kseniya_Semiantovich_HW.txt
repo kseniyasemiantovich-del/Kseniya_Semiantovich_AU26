@@ -1,0 +1,21 @@
+- Task 6 answers
+-- =====================================================================
+-- film_in_stock / film_not_in_stock: list inventory_id of a film in a store,
+--   in stock / out. The OUT p_film_count is never set, the name is misleading.
+-- inventory_in_stock: TRUE if no rentals, or no open rental (return_date NULL).
+-- inventory_held_by_customer: customer with the open rental of that copy, else NULL.
+-- last_day: last day of the month, built with string concatenation.
+-- rewards_report: 0 rows because of the 3-month window from CURRENT_DATE.
+-- Remove: film_not_in_stock (copy of film_in_stock with NOT); last_day after the fix
+--   has no callers; inventory_in_stock can be one NOT EXISTS.
+-- Bad practice: SECURITY DEFINER without search_path and EXECUTE in rewards_report;
+--   MySQL IF() in get_customer_balance; SELECT INTO without LIMIT in
+--   inventory_held_by_customer; string-built dates in last_day.
+-- group_concat: aggregate on _group_concat (skips NULLs, joins with ', ').
+--   Used in actor_info, film_list, nicer_but_slower_film_list.
+-- last_updated: BEFORE UPDATE trigger, sets last_update = now(). 14 tables.
+-- tmpSQL: text of the INSERT and DROP run by EXECUTE. Not needed: values are
+--   plain variables, RETURN QUERY returns rows directly.
+-- Wrong results: rewards_report (wrong month, 0 rows); old get_customer_balance
+--   ignored open rentals and never charged replacement; inventory_held_by_customer
+--   returns one customer silently if there are two open rentals.
